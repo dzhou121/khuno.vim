@@ -320,6 +320,7 @@ function! s:ReadOutput(file)
         let current_error.error_column = 0
       endif
       let current_error.error_text = matchlist(line, '\v(\d+):\s+(.*)')[2]
+      let current_error.line_number = matchlist(line, '\v:(\d+):')[1]
 
       " Lets see if we need to append to an existing line or not
       if has_key(errors, error_line)
@@ -354,26 +355,42 @@ function! s:has_invalid_syntax()
 endfunction
 
 
-
 function! s:ShowErrors() abort
   highlight link Flakes SpellBad
+  sign define khuno text=✗ texthl=error
+  exe ":sign unplace * file=" . expand("%:p")
   for line in keys(b:flake_errors)
     if line != "last_error_line"
       let err = b:flake_errors[line][0]
-      if (err['error_column'] > 0)
-        if err['error_text'] =~ '\v\s+(line|trailing whitespace)'
-          let match = '\%' . line . 'l\n\@!'
-        else
-          let match = '^\%'. line . 'l\_.\{-}\zs\k\+\k\@!\%>' . err['error_column'] . 'c'
-        endif
-        call matchadd('Flakes', match)
-      else
-        call matchadd('Flakes', '\%' . line . 'l\n\@!')
+      if err['error_text'] == '\v\s+(line|trailing whitespace)'
+          call matchadd('Flakes', '^\%'. line . 'l\_.\{-}\zs\k\+\k\@!\%>' . err['error_column'] . 'c')
       endif
+      exe ":sign place " . err['line_number'] . " line=" . err['line_number'] . " name=khuno file=" . expand("%:p")
     endif
   endfor
   let b:khuno_called_async = 0
 endfunction
+
+
+"function! s:ShowErrors() abort
+"  highlight link Flakes SpellBad
+"  for line in keys(b:flake_errors)
+"    if line != "last_error_line"
+"      let err = b:flake_errors[line][0]
+"      if (err['error_column'] > 0)
+"        if err['error_text'] =~ '\v\s+(line|trailing whitespace)'
+"          let match = '\%' . line . 'l\n\@!'
+"        else
+"          let match = '^\%'. line . 'l\_.\{-}\zs\k\+\k\@!\%>' . err['error_column'] . 'c'
+"        endif
+"        call matchadd('Flakes', match)
+"      else
+"        call matchadd('Flakes', '\%' . line . 'l\n\@!')
+"      endif
+"    endif
+"  endfor
+"  let b:khuno_called_async = 0
+"endfunction
 
 
 function! s:CloseIfLastWindow()
