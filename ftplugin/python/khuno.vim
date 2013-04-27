@@ -69,13 +69,17 @@ endfunction
 augroup khuno_automagic
   autocmd!
   autocmd BufEnter * if s:au_should_run() | call s:Flake() | endif
+  autocmd InsertLeave * if s:au_should_run() | call s:Flake() | endif
   autocmd BufWritePost * if s:au_should_run() | call s:Flake() | endif
-  autocmd InsertLeave <buffer> if s:au_should_run() | call s:Flake() | endif
-  autocmd InsertLeave * if s:au_should_run() | call  s:ParseReport() | endif
+  "autocmd CursorHoldI * if s:au_should_run() | call s:Flake() | endif
+  autocmd InsertEnter * if s:au_should_run() | call s:ParseReport() | endif
+  autocmd CursorHold * if s:au_should_run() | call s:ParseReport() | endif
 augroup END
 
 au CursorMoved * if &ft ==# 'python' | call  s:GetFlakesMessage() | endif
-au CursorMoved * if &ft ==# 'python' | call  s:ParseReport() | endif
+"au CursorMoved * if &ft ==# 'python' | call  s:ParseReport() | endif
+au CursorMovedI * if &ft ==# 'python' | call  s:GetFlakesMessage() | endif
+"au CursorMovedI * if &ft ==# 'python' | call  s:ParseReport() | endif
 
 
 function! s:au_should_run() abort
@@ -248,7 +252,6 @@ endfunction
 
 
 function! s:Flake()
-  exe ":sign unplace * file=" . expand("%:p")
   if exists("g:khuno_builtins")
     let s:khuno_builtins_opt=" --builtins=".g:khuno_builtins
   else
@@ -295,6 +298,7 @@ function! s:ParseReport()
 
   silent! call s:ClearFlakes()
   let b:flake_errors = errors
+  exe ":sign unplace * buffer=" . bufnr("%")
   if len(errors)
     call s:ShowErrors()
   endif
@@ -363,9 +367,9 @@ function! s:ShowErrors() abort
     if line != "last_error_line"
       let err = b:flake_errors[line][0]
       if err['error_text'] == '\v\s+(line|trailing whitespace)'
-          call matchadd('Flakes', '^\%'. line . 'l\_.\{-}\zs\k\+\k\@!\%>' . err['error_column'] . 'c')
+        call matchadd('Flakes', '^\%'. line . 'l\_.\{-}\zs\k\+\k\@!\%>' . err['error_column'] . 'c')
       endif
-      exe ":sign place " . err['line_number'] . " line=" . err['line_number'] . " name=khuno file=" . expand("%:p")
+      exe ":sign place " . err['line_number'] . " line=" . err['line_number'] . " name=khuno buffer=" . bufnr("%")
     endif
   endfor
   let b:khuno_called_async = 0
