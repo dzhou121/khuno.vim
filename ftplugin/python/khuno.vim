@@ -248,6 +248,7 @@ endfunction
 
 
 function! s:Flake()
+  exe ":sign unplace * file=" . expand("%:p")
   if exists("g:khuno_builtins")
     let s:khuno_builtins_opt=" --builtins=".g:khuno_builtins
   else
@@ -358,7 +359,6 @@ endfunction
 function! s:ShowErrors() abort
   highlight link Flakes SpellBad
   sign define khuno text=✗ texthl=error
-  exe ":sign unplace * file=" . expand("%:p")
   for line in keys(b:flake_errors)
     if line != "last_error_line"
       let err = b:flake_errors[line][0]
