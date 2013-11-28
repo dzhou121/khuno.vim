@@ -68,7 +68,7 @@ endfunction
 " au commands
 augroup khuno_automagic
   autocmd!
-  autocmd BufEnter * if s:au_should_run() | call s:Flake() | endif
+  "autocmd BufEnter * if s:au_should_run() | call s:Flake() | endif
   autocmd InsertLeave * if s:au_should_run() | call s:Flake() | endif
   autocmd BufWritePost * if s:au_should_run() | call s:Flake() | endif
   "autocmd CursorHoldI * if s:au_should_run() | call s:Flake() | endif
