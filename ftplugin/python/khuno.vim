@@ -73,7 +73,7 @@ augroup khuno_automagic
   autocmd BufWritePost * if s:au_should_run() | call s:Flake() | endif
   "autocmd CursorHoldI * if s:au_should_run() | call s:Flake() | endif
   autocmd InsertEnter * if s:au_should_run() | call s:ParseReport() | endif
-  autocmd CursorHold * if s:au_should_run() | call s:ParseReport() | endif
+  "autocmd CursorHold * if s:au_should_run() | call s:ParseReport() | endif
 augroup END
 
 au CursorMoved * if &ft ==# 'python' | call  s:GetFlakesMessage() | endif
