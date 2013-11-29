@@ -80,7 +80,7 @@ augroup END
 
 au CursorMoved * if &ft ==# 'python' | call  s:GetFlakesMessage() | endif
 "au CursorMoved * if &ft ==# 'python' | call  s:ParseReport() | endif
-au CursorMovedI * if &ft ==# 'python' | call  s:GetFlakesMessage() | endif
+"au CursorMovedI * if &ft ==# 'python' | call  s:GetFlakesMessage() | endif
 "au CursorMovedI * if &ft ==# 'python' | call  s:ParseReport() | endif
 
 
