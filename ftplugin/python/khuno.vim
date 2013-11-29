@@ -303,6 +303,7 @@ function! s:ParseReport()
   if len(errors)
     call s:ShowErrors()
   endif
+  let b:khuno_called_async = 0
 endfunction
 
 
@@ -371,7 +372,6 @@ function! s:ShowErrors() abort
       exe ":sign place " . err['line_number'] . " line=" . err['line_number'] . " name=khuno buffer=" . bufnr("%")
     endif
   endfor
-  let b:khuno_called_async = 0
 endfunction
 
 
