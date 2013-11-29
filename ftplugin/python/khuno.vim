@@ -14,6 +14,8 @@ endif
 
 
 let g:loaded_khuno = 1
+  
+sign define khuno text=✗ texthl=error
 
 
 if !exists('g:khuno_flake_cmd')
@@ -298,7 +300,6 @@ function! s:ParseReport()
 
   silent! call s:ClearFlakes()
   let b:flake_errors = errors
-  exe ":sign unplace * buffer=" . bufnr("%")
   if len(errors)
     call s:ShowErrors()
   endif
@@ -361,40 +362,17 @@ endfunction
 
 
 function! s:ShowErrors() abort
-  highlight link Flakes SpellBad
-  sign define khuno text=✗ texthl=error
   for line in keys(b:flake_errors)
     if line != "last_error_line"
       let err = b:flake_errors[line][0]
-      if err['error_text'] == '\v\s+(line|trailing whitespace)'
-        call matchadd('Flakes', '^\%'. line . 'l\_.\{-}\zs\k\+\k\@!\%>' . err['error_column'] . 'c')
-      endif
+      "if err['error_text'] == '\v\s+(line|trailing whitespace)'
+      "  call matchadd('Flakes', '^\%'. line . 'l\_.\{-}\zs\k\+\k\@!\%>' . err['error_column'] . 'c')
+      "endif
       exe ":sign place " . err['line_number'] . " line=" . err['line_number'] . " name=khuno buffer=" . bufnr("%")
     endif
   endfor
   let b:khuno_called_async = 0
 endfunction
-
-
-"function! s:ShowErrors() abort
-"  highlight link Flakes SpellBad
-"  for line in keys(b:flake_errors)
-"    if line != "last_error_line"
-"      let err = b:flake_errors[line][0]
-"      if (err['error_column'] > 0)
-"        if err['error_text'] =~ '\v\s+(line|trailing whitespace)'
-"          let match = '\%' . line . 'l\n\@!'
-"        else
-"          let match = '^\%'. line . 'l\_.\{-}\zs\k\+\k\@!\%>' . err['error_column'] . 'c'
-"        endif
-"        call matchadd('Flakes', match)
-"      else
-"        call matchadd('Flakes', '\%' . line . 'l\n\@!')
-"      endif
-"    endif
-"  endfor
-"  let b:khuno_called_async = 0
-"endfunction
 
 
 function! s:CloseIfLastWindow()
@@ -405,12 +383,13 @@ endfunction
 
 
 function! s:ClearFlakes() abort
-  let s:matches = getmatches()
-  for s:matchId in s:matches
-    if s:matchId['group'] == 'Flakes'
-      call matchdelete(s:matchId['id'])
-    endif
-  endfor
+  "let s:matches = getmatches()
+  "for s:matchId in s:matches
+  "  if s:matchId['group'] == 'Flakes'
+  "    call matchdelete(s:matchId['id'])
+  "  endif
+  "endfor
+  exe ":sign unplace * buffer=" . bufnr("%")
   let b:flake_errors = {}
 endfunction
 
