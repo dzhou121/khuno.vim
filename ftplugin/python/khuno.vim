@@ -398,6 +398,9 @@ function! s:GetFlakesMessage() abort
   if !(exists('b:flake_errors'))
     return
   endif
+  if (len(b:flake_errors) == 0)
+    return
+  endif
   let s:cursorPos = getpos(".")
   let line_no = s:cursorPos[1]
   " if there's a message for the line the cursor is currently on, echo
